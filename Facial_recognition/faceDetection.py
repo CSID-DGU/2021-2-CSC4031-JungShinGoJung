@@ -1,14 +1,18 @@
 import numpy as np
 import cv2
-# Cascades 디렉토리의 haarcascade_frontalface_default.xml 파일을 Classifier로 사용
-faceCascade = cv2.CascadeClassifier('Cascades/haarcascade_frontalface_default.xml')
+
+#웹캠에서 영상을 읽어온다
 cap = cv2.VideoCapture(0)
-cap.set(3,640) # set Width
-cap.set(4,480) # set Height
+cap.set(3, 640) #WIDTH
+cap.set(4, 480) #HEIGHT
+
+#얼굴 인식 캐스케이드 파일 읽는다
+faceCascade = cv2.CascadeClassifier('Cascades/haarcascade_frontalface_default.xml')
+
 while True:
-    ret, img = cap.read()
-    img = cv2.flip(img, -1) # 상하반전
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    ret, frame = cap.read()
+    #frame = cv2.flip(frame, -1) # 상하반전
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = faceCascade.detectMultiScale(
         gray,
         scaleFactor=1.2,
@@ -16,10 +20,10 @@ while True:
         minSize=(20, 20)
     )
     for (x,y,w,h) in faces:
-        cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
         roi_gray = gray[y:y+h, x:x+w]
-        roi_color = img[y:y+h, x:x+w]
-    cv2.imshow('video',img) # video라는 이름으로 출력
+        roi_color = frame[y:y + h, x:x + w]
+    cv2.imshow('video', frame) # video라는 이름으로 출력
     k = cv2.waitKey(30) & 0xff
     if k == 27: # press 'ESC' to quit # ESC를 누르면 종료
         break
