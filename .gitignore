@@ -1,5 +1,6 @@
 #dataset files and folders
 trainer/
+Profile.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
