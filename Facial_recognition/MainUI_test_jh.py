@@ -11,6 +11,8 @@ from PyQt5.QtGui import QPixmap, QImage
 import time
 import datetime
 
+import FaceLogin
+
 
 
 class MainWindow(QDialog,QMainWindow):
@@ -83,6 +85,7 @@ class Login(QDialog):
     def __init__(self) :
         super().__init__()
         self.initUI()
+        faceid=FaceLogin.DetectFace()
 
     def initUI(self):
         pal = QPalette()
