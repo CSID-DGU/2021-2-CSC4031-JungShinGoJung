@@ -77,7 +77,7 @@ def TakeImages():
                 # Incrementing sample number
                 sampleNum = sampleNum + 1
                 # Saving the captured face in the dataset folder TrainingImage
-                cv2.imwrite("dataset\ " + name + "." + Id + '.' + str(sampleNum) + ".jpg", gray[y:y + h, x:x + w])
+                cv2.imwrite("dataset/" + name + "." + Id + '.' + str(sampleNum) + ".jpg", gray[y:y + h, x:x + w])
                 # display the frame
             cv2.imshow('Capturing Face for Login ', img)
 
@@ -134,37 +134,42 @@ def TrainImages():
     faces, Id = getImagesAndLabels("dataset")
     recognizer.train(faces, np.array(Id))
     # store data in file
-    recognizer.save("trainer\Trainner.yml")
-    res = "Image Trained and data stored in TrainData\Trainner.yml "
+    recognizer.save("trainer/Trainner.yml")
+    res = "Image Trained and data stored in trainer\TrainData\Trainner.yml "
 
     print(res)
 
 
 # This will make sure no duplicates exixts in profile.csv(using Pandas here)
-df = pd.read_csv('Profile.csv')
-df.sort_values('Ids', inplace=True)
-df.drop_duplicates(subset='Ids', keep='first', inplace=True)
-df.to_csv('Profile.csv', index=False)
+
 
 
 # Fuction to detect the face
 def DetectFace():
+    df = pd.read_csv('Profile.csv')
+    print(df)
+    df.sort_values('Ids', inplace=True)
+    df.drop_duplicates(subset='Ids', keep='first', inplace=True)
+    df.to_csv('Profile.csv', index=False)
     reader = csv.DictReader(open('Profile.csv'))
+    print(reader)
+
     print('Detecting Login Face')
     for rows in reader:
         result = dict(rows)
-        # print(result)
+        print(result)
         if result['Ids'] == '1':
             name1 = result['Name']
         elif result['Ids'] == '2':
             name2 = result["Name"]
     recognizer = cv2.face.LBPHFaceRecognizer_create()  # cv2.createLBPHFaceRecognizer()
-    recognizer.read("trainer\Trainner.yml")
+    recognizer.read("trainer/Trainner.yml")
     faceCascade = cv2.CascadeClassifier('Cascades/haarcascade_frontalface_default.xml')
+    print(faceCascade)
     cam = cv2.VideoCapture(0)
     font = cv2.FONT_HERSHEY_SIMPLEX
     Face_Id = ''
-    name2 = ''
+
 
     # Camera ON Everytime
     while True:
@@ -178,6 +183,9 @@ def DetectFace():
             Face_Id = 'Not detected'
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
             Id, confidence = recognizer.predict(gray[y:y + h, x:x + w])
+            print(Id)
+            print(Face_Id)
+            print(name2)
             if (confidence < 50):
                 if (Id == 1):
                     name = name1
@@ -193,7 +201,7 @@ def DetectFace():
                 # Here unknown faces detected will be stored
                 noOfFile = len(os.listdir("UnknownFaces")) + 1
                 if int(noOfFile) < 100:
-                    cv2.imwrite("dataset02\Image" + str(noOfFile) + ".jpg", frame[y:y + h, x:x + w])
+                    cv2.imwrite("dataset02/Image" + str(noOfFile) + ".jpg", frame[y:y + h, x:x + w])
 
                 else:
                     pass
@@ -210,12 +218,13 @@ def DetectFace():
             pass
 
         elif Face_Id == name1 or name2 and Face_Id != 'Unknown':
-            print('----------Detected as {}----------'.format(name1))
+            print('----------Detected as {}----------'.format(name))
             print('-----------login successfull-------')
-            print('***********WELCOME {}**************'.format(name1))
+            print('***********WELCOME {}**************'.format(name))
             break
         else:
             print('-----------Login failed please try agian-------')
+
     return Id
 
         # if (cv2.waitKey(1) == ord('q')):
@@ -223,6 +232,6 @@ def DetectFace():
 
 
 
-TakeImages()
-TrainImages()
+#TakeImages()
+#TrainImages()
 DetectFace()
