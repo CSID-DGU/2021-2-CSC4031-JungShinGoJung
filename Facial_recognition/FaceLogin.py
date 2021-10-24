@@ -223,6 +223,6 @@ def DetectFace():
 
 
 
-#TakeImages()
-#TrainImages()
+TakeImages()
+TrainImages()
 DetectFace()
