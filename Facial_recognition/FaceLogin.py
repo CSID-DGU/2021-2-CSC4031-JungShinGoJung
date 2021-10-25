@@ -185,7 +185,7 @@ def DetectFace():
             Id, confidence = recognizer.predict(gray[y:y + h, x:x + w])
             print(Id)
             print(Face_Id)
-            print(name2)
+
             if (confidence < 50):
                 if (Id == 1):
                     name = name1
@@ -232,6 +232,6 @@ def DetectFace():
 
 
 
-#TakeImages()
-#TrainImages()
-DetectFace()
+# TakeImages()
+# TrainImages()
+# DetectFace()

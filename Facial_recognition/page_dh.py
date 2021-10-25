@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import pymysql
+# import pymysql
 import datetime
 import cv2
 from PyQt5.QtWidgets import *
@@ -17,37 +17,40 @@ from PyQt5.uic import loadUi
 from PyQt5.QtCore import QTimer, QTime
 
 
+### mysql 연결 ###
 
-conn = pymysql.connect(
-    user='smart-mirror',
-    passwd='1234',
-    host='localhost',
-    db='mirrordb',
-    charset='utf8'
-)
-cursor = conn.cursor()
+# conn = pymysql.connect(
+#     user='smart-mirror',
+#     passwd='1234',
+#     host='localhost',
+#     db='mirrordb',
+#     charset='utf8'
+# # )
+# cursor = conn.cursor()
 
 
 
 class Ui_Form_main(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(400, 300)
+
+
+
         self.label = QtWidgets.QLabel(Form)
         self.label.setGeometry(QtCore.QRect(140, 110, 64, 15))
         self.label.setObjectName("label")
-        
+
         self.pushButton = QtWidgets.QPushButton(Form)
         self.pushButton.setGeometry(QtCore.QRect(220, 160, 93, 28))
         self.pushButton.setObjectName("pushButton")
-        
+
         self.pushButton2 = QtWidgets.QPushButton(Form)
         self.pushButton2.setGeometry(QtCore.QRect(220, 220, 93, 28))
         self.pushButton2.setObjectName("pushButton2")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
-
+        
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
@@ -65,7 +68,7 @@ class Ui_Form_next(object):
         self.pushButton = QtWidgets.QPushButton(Form)
         self.pushButton.setGeometry(QtCore.QRect(220, 220, 93, 28))
         self.pushButton.setObjectName("pushButton")
-    
+
         self.retranslateUi(Form, faceid)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -96,7 +99,3 @@ class Ui_Form_next(object):
         Form.setWindowTitle(_translate("Form", "Form"))
         self.label.setText(_translate("Form", result2[0][0]+"님"+today_medi[0]+"드셨나요"))
         self.pushButton.setText(_translate("Form", "back"))
-
-
-
-
