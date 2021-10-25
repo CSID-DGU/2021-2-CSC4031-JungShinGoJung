@@ -50,7 +50,7 @@ class Ui_Form_main(object):
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
-        
+
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
@@ -59,7 +59,7 @@ class Ui_Form_main(object):
         self.pushButton2.setText(_translate("Form", "videoPage"))
 
 class Ui_Form_next(object):
-    def setupUi(self, Form, faceid):
+    def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(400, 300)
         self.label = QtWidgets.QLabel(Form)
@@ -69,7 +69,7 @@ class Ui_Form_next(object):
         self.pushButton.setGeometry(QtCore.QRect(220, 220, 93, 28))
         self.pushButton.setObjectName("pushButton")
 
-        self.retranslateUi(Form, faceid)
+        # self.retranslateUi(Form,faceid)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form, faceid):

@@ -11,7 +11,6 @@ class mainWindow(QDialog, page_dh.Ui_Form_main):
         super(mainWindow, self).__init__()
         self.setupUi(self)
         self.pushButton.clicked.connect(self.OpenLoginClass)
-        # self.pushButton2.clicked.connect(self.play)
 
     def OpenLoginClass(self):
         widget.setCurrentIndex(widget.currentIndex()+1)
@@ -29,16 +28,20 @@ class mainWindow(QDialog, page_dh.Ui_Form_main):
 
 
         ###로그인 페이지
-class Login(QDialog, page_dh.Ui_Form_next):
+class login(QDialog, page_dh.Ui_Form_next):
     def __init__(self):
-        faceid=FaceLogin.DetectFace()
-        super(Login, self).__init__()
-        self.setupUi(self, faceid)
+        super(login, self).__init__()
+        self.setupUi(self)
         self.pushButton.clicked.connect(self.back)
+        #여기에 위치해 주세요 png
+        self.face_login()
 
     ### 페이스 로그인
     def face_login(self):
-        pass
+         faceid=FaceLogin.DetectFace()
+         if faceid :
+             self.OpenMedicineClass()
+
 
     def OpenMedicineClass(self):
         widget.setCurrentIndex(widget.currentIndex()+1)
@@ -91,11 +94,13 @@ if __name__ == "__main__":
 
     ### 다이얼로그 위젯 생성
     main_window = mainWindow()
-    Login = Login()
+    login_window = login()
+
+
 
 
     widget.addWidget(main_window)
-    widget.addWidget(Login)
+    widget.addWidget(login_window)
 
     widget.showFullScreen()
 

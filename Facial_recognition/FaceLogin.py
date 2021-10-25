@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 import numpy as np
 import pandas as pd
 
+Login_boolean = False
 name, Id = '',''
 dic = {
     'Name' : name,
@@ -153,7 +154,6 @@ def DetectFace():
     df.to_csv('Profile.csv', index=False)
     reader = csv.DictReader(open('Profile.csv'))
     print(reader)
-
     print('Detecting Login Face')
     for rows in reader:
         result = dict(rows)
@@ -195,6 +195,7 @@ def DetectFace():
 
                 Predicted_name = str(name)
                 Face_Id = Predicted_name
+                Login_boolean == True
             else:
                 Predicted_name = 'Unknown'
                 Face_Id = Predicted_name
@@ -225,7 +226,7 @@ def DetectFace():
         else:
             print('-----------Login failed please try agian-------')
 
-    return Id
+    return Id 
 
         # if (cv2.waitKey(1) == ord('q')):
         #   break
