@@ -15,6 +15,8 @@ import cv2
 from PyQt5.QtWidgets import *
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import QTimer, QTime
+from PyQt5.QtGui import *
+from PyQt5.QtCore import QTimer,QDateTime
 
 
 ### mysql 연결 ###
@@ -34,6 +36,30 @@ class Ui_Form_main(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
 
+
+        pal = QPalette()
+        pal.setColor(QPalette.Background,QColor(0,0,0))
+        self.setAutoFillBackground(True)
+        self.setPalette(pal)
+
+        time=QDateTime.currentDateTime()
+
+        #Setting the display format for system time
+        dateDisplay=time.toString('yyyy년 MM월 dd일')
+        timeDisplay = time.toString('hh시 mm분 ss초 dddd')
+        self.clock = QtWidgets.QLabel(Form)
+        self.clock.setGeometry(QtCore.QRect(0, 0, 1000, 1000))
+        self.clock.setText(dateDisplay)
+        self.clock.setStyleSheet("color: #fcfcfc;")
+        self.clock.setObjectName("clock_label")
+        self.clock.setFont(QtGui.QFont("맑은 고딕",50))
+
+        self.clock2 = QtWidgets.QLabel(Form)
+        self.clock2.setGeometry(QtCore.QRect(100, 100, 1000, 1000))
+        self.clock2.setText(timeDisplay)
+        self.clock2.setStyleSheet("color: #fcfcfc;")
+        self.clock2.setObjectName("clock2_label")
+        self.clock2.setFont(QtGui.QFont("맑은 고딕",50))
 
 
         self.label = QtWidgets.QLabel(Form)
@@ -58,10 +84,36 @@ class Ui_Form_main(object):
         self.pushButton.setText(_translate("Form", "next"))
         self.pushButton2.setText(_translate("Form", "videoPage"))
 
+    def clock_ui(self,Form):
+        time=QDateTime.currentDateTime()
+
+        #Setting the display format for system time
+        dateDisplay=time.toString('yyyy년 MM월 dd일')
+        timeDisplay = time.toString('hh시 mm분 ss초 dddd')
+
+        self.clock = QtWidgets.QLabel(Form)
+        self.clock.setGeometry(QtCore.QRect(0, 0, 1000, 1000))
+        self.clock.setText(dateDisplay)
+        self.clock.setStyleSheet("color: #fcfcfc;")
+        self.clock.setObjectName("clock_label")
+        self.clock.setFont(QtGui.QFont("맑은 고딕",50))
+
+        self.clock2 = QtWidgets.QLabel(Form)
+        self.clock2.setGeometry(QtCore.QRect(100, 100, 1000, 1000))
+        self.clock2.setText(timeDisplay)
+        self.clock2.setStyleSheet("color: #fcfcfc;")
+        self.clock2.setObjectName("clock2_label")
+        self.clock2.setFont(QtGui.QFont("맑은 고딕",50))
+
 class Ui_Form_next(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(400, 300)
+
+        pal = QPalette()
+        pal.setColor(QPalette.Background,QColor(0,0,0))
+        self.setAutoFillBackground(True)
+        self.setPalette(pal)
+
         self.label = QtWidgets.QLabel(Form)
         self.label.setGeometry(QtCore.QRect(140, 110, 200, 15))
         self.label.setObjectName("label")
@@ -71,6 +123,38 @@ class Ui_Form_next(object):
 
         # self.retranslateUi(Form,faceid)
         QtCore.QMetaObject.connectSlotsByName(Form)
+
+    def retranslateUi(self, Form, faceid):
+        print(faceid)
+        days = ['mon', 'tue', 'wen', 'thu', 'fri', 'sat', 'sun']
+        today = datetime.datetime.today().weekday()
+        faceid = str(faceid)
+        sql = 'select name from medicine where userID=' + faceid +' && ' + days[today]+'=1'
+        sql2 = 'select name from user where id=1'
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        cursor.execute(sql2)
+        result2 = cursor.fetchall()
+        i = 0
+        today_medi=[]
+        while(i<len(result)):
+            medicine = result[i][0]
+            print(medicine)
+            today_medi.append(medicine)
+            print(today_medi)
+            if(medicine == pymysql.NULL):
+                break
+            i = i+1
+        print(today_medi)
+
+        _translate = QtCore.QCoreApplication.translate
+        Form.setWindowTitle(_translate("Form", "Form"))
+        self.label.setText(_translate("Form", result2[0][0]+"님"+today_medi[0]+"드셨나요"))
+        self.pushButton.setText(_translate("Form", "back"))
+
+class Ui_Form_Medicine(object):
+    def setupUi(self, Form):
+        pass
 
     def retranslateUi(self, Form, faceid):
         print(faceid)
