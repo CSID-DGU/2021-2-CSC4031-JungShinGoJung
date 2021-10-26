@@ -78,7 +78,7 @@ class PirThread(QThread):
         self.parent = parent
 
     def run(self):
-
+        pass
 
 
 class Login(QDialog):

@@ -71,7 +71,7 @@ class login(QDialog, page_dh.Ui_Form_next):
         #여기에 위치해 주세요 png
         self.setupUi(self, self.faceid)
         self.pushButton.clicked.connect(self.back)
-    
+
 
     def OpenMedicineClass(self):
         widget.setCurrentIndex(widget.currentIndex()+1)
@@ -125,7 +125,7 @@ if __name__ == "__main__":
     ### 다이얼로그 위젯 생성
     main_window = mainWindow()
     widget.addWidget(main_window)
-    
+
 
     widget.showFullScreen()
 
