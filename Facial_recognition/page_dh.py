@@ -111,11 +111,12 @@ class Ui_Form_next(object):
 
 
         self.label = QtWidgets.QLabel(Form)
+        self.label.setFont(QtGui.QFont("맑은 고딕",35))
         self.label.setGeometry(QtCore.QRect(500, 0, 1920, 1080))
         self.label.setStyleSheet("color: #fcfcfc;")
         self.label.setObjectName("label")
         self.pushButton = QtWidgets.QPushButton(Form)
-        self.pushButton.setGeometry(QtCore.QRect(500, 220, 1920, 1080))
+        self.pushButton.setGeometry(QtCore.QRect(1800, 0, 93, 28))
         self.pushButton.setObjectName("pushButton")
         # self.retranslateUi(Form,faceid)
         QtCore.QMetaObject.connectSlotsByName(Form)
