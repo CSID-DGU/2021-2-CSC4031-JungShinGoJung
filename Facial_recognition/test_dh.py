@@ -16,7 +16,19 @@ class mainWindow(QDialog, page_dh.Ui_Form_main):
         # self.Pir_run()
 
     def OpenLoginClass(self):
-        widget.setCurrentIndex(widget.currentIndex()+1)
+        faceid = FaceLogin.DetectFace()
+        login_window = login(faceid)
+        widget.addWidget(login_window) ######
+        widget.setCurrentIndex(widget.currentIndex()+1) ######
+
+
+class FaceIdSiganl(QObject):
+
+    signal = pyqtSignal(int)
+    def run(self, faceid):
+        self.signal.emit(faceid)
+
+
 
     # def PirCheck(self):
     #     pirPin = 7
@@ -53,19 +65,13 @@ class pir_thread( QThread, page_dh.Ui_Form_main):
 
 
 class login(QDialog, page_dh.Ui_Form_next):
-    def __init__(self):
+    def __init__(self, faceid):
         super(login, self).__init__()
-        self.setupUi(self)
-        self.pushButton.clicked.connect(self.back)
+        self.faceid = faceid
         #여기에 위치해 주세요 png
-        self.face_login()
-
-    ### 페이스 로그인
-    def face_login(self):
-         faceid = FaceLogin.DetectFace()
-         if faceid :
-             self.OpenMedicineClass()
-
+        self.setupUi(self, self.faceid)
+        self.pushButton.clicked.connect(self.back)
+    
 
     def OpenMedicineClass(self):
         widget.setCurrentIndex(widget.currentIndex()+1)
@@ -118,13 +124,8 @@ if __name__ == "__main__":
 
     ### 다이얼로그 위젯 생성
     main_window = mainWindow()
-    login_window = login()
-
-
-
-
     widget.addWidget(main_window)
-    widget.addWidget(login_window)
+    
 
     widget.showFullScreen()
 

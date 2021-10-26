@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-# import pymysql
+import pymysql
 import datetime
 import cv2
 from PyQt5.QtWidgets import *
@@ -19,16 +19,17 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import QTimer,QDateTime
 
 
-### mysql 연결 ###
+## mysql 연결 ###
 
-# conn = pymysql.connect(
-#     user='smart-mirror',
-#     passwd='1234',
-#     host='localhost',
-#     db='mirrordb',
-#     charset='utf8'
-# # )
-# cursor = conn.cursor()
+conn = pymysql.connect(
+    user='smart-mirror',
+    passwd='1234',
+    host='localhost',
+    db='mirrordb',
+    charset='utf8'
+ )
+
+cursor = conn.cursor()
 
 
 
@@ -42,24 +43,23 @@ class Ui_Form_main(object):
         self.setAutoFillBackground(True)
         self.setPalette(pal)
 
-        time=QDateTime.currentDateTime()
-
-        #Setting the display format for system time
-        dateDisplay=time.toString('yyyy년 MM월 dd일')
-        timeDisplay = time.toString('hh시 mm분 ss초 dddd')
+ 
         self.clock = QtWidgets.QLabel(Form)
         self.clock.setGeometry(QtCore.QRect(0, 0, 1000, 1000))
-        self.clock.setText(dateDisplay)
         self.clock.setStyleSheet("color: #fcfcfc;")
         self.clock.setObjectName("clock_label")
         self.clock.setFont(QtGui.QFont("맑은 고딕",50))
 
-        self.clock2 = QtWidgets.QLabel(Form)
-        self.clock2.setGeometry(QtCore.QRect(100, 100, 1000, 1000))
-        self.clock2.setText(timeDisplay)
-        self.clock2.setStyleSheet("color: #fcfcfc;")
-        self.clock2.setObjectName("clock2_label")
-        self.clock2.setFont(QtGui.QFont("맑은 고딕",50))
+        self.timer=QTimer(self)  #######
+        self.timer.start(1000)   ### 1초단위로 새로고침
+        self.timer.timeout.connect(self.displayTime)
+
+        # self.clock2 = QtWidgets.QLabel(Form)
+        # self.clock2.setGeometry(QtCore.QRect(100, 100, 1000, 1000))
+        # self.clock2.setText(timeDisplay)
+        # self.clock2.setStyleSheet("color: #fcfcfc;")
+        # self.clock2.setObjectName("clock2_label")
+        # self.clock2.setFont(QtGui.QFont("맑은 고딕",50))
 
 
         self.label = QtWidgets.QLabel(Form)
@@ -77,6 +77,12 @@ class Ui_Form_main(object):
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
+    def displayTime(self):
+        now_time = QTime.currentTime()
+        timeText = now_time.toString('hh:mm:ss')
+        self.clock.setText(timeText)
+
+
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
@@ -84,29 +90,9 @@ class Ui_Form_main(object):
         self.pushButton.setText(_translate("Form", "next"))
         self.pushButton2.setText(_translate("Form", "videoPage"))
 
-    def clock_ui(self,Form):
-        time=QDateTime.currentDateTime()
-
-        #Setting the display format for system time
-        dateDisplay=time.toString('yyyy년 MM월 dd일')
-        timeDisplay = time.toString('hh시 mm분 ss초 dddd')
-
-        self.clock = QtWidgets.QLabel(Form)
-        self.clock.setGeometry(QtCore.QRect(0, 0, 1000, 1000))
-        self.clock.setText(dateDisplay)
-        self.clock.setStyleSheet("color: #fcfcfc;")
-        self.clock.setObjectName("clock_label")
-        self.clock.setFont(QtGui.QFont("맑은 고딕",50))
-
-        self.clock2 = QtWidgets.QLabel(Form)
-        self.clock2.setGeometry(QtCore.QRect(100, 100, 1000, 1000))
-        self.clock2.setText(timeDisplay)
-        self.clock2.setStyleSheet("color: #fcfcfc;")
-        self.clock2.setObjectName("clock2_label")
-        self.clock2.setFont(QtGui.QFont("맑은 고딕",50))
 
 class Ui_Form_next(object):
-    def setupUi(self, Form):
+    def setupUi(self, Form, faceid):
         Form.setObjectName("Form")
 
         pal = QPalette()
@@ -114,15 +100,32 @@ class Ui_Form_next(object):
         self.setAutoFillBackground(True)
         self.setPalette(pal)
 
+        self.clock = QtWidgets.QLabel(Form)
+        self.clock.setGeometry(QtCore.QRect(0, 0, 1000, 1000))
+        self.clock.setStyleSheet("color: #fcfcfc;")
+        self.clock.setObjectName("clock_label")
+        self.clock.setFont(QtGui.QFont("맑은 고딕",50))
+
+        self.timer=QTimer(self)
+        self.timer.start(1000)
+        self.timer.timeout.connect(self.displayTime)
+
+
         self.label = QtWidgets.QLabel(Form)
-        self.label.setGeometry(QtCore.QRect(140, 110, 200, 15))
+        self.label.setGeometry(QtCore.QRect(140, 110, 500, 15))
+        self.label.setStyleSheet("color: #fcfcfc;")
         self.label.setObjectName("label")
         self.pushButton = QtWidgets.QPushButton(Form)
         self.pushButton.setGeometry(QtCore.QRect(220, 220, 93, 28))
         self.pushButton.setObjectName("pushButton")
-
-        # self.retranslateUi(Form,faceid)
+        self.retranslateUi(Form,faceid)
         QtCore.QMetaObject.connectSlotsByName(Form)
+
+    def displayTime(self):
+        now_time = QTime.currentTime()
+        timeText = now_time.toString('hh:mm:ss')
+        self.clock.setText(timeText)
+
 
     def retranslateUi(self, Form, faceid):
         print(faceid)
@@ -130,7 +133,7 @@ class Ui_Form_next(object):
         today = datetime.datetime.today().weekday()
         faceid = str(faceid)
         sql = 'select name from medicine where userID=' + faceid +' && ' + days[today]+'=1'
-        sql2 = 'select name from user where id=1'
+        sql2 = 'select name from user where id=' + faceid
         cursor.execute(sql)
         result = cursor.fetchall()
         cursor.execute(sql2)
@@ -139,17 +142,22 @@ class Ui_Form_next(object):
         today_medi=[]
         while(i<len(result)):
             medicine = result[i][0]
-            print(medicine)
             today_medi.append(medicine)
-            print(today_medi)
             if(medicine == pymysql.NULL):
                 break
             i = i+1
-        print(today_medi)
+        
+        medi = ""
+        x=0
+        while(x<len(today_medi)):
+            medi=medi+", "
+            medi=medi+today_medi[x]
+            x=x+1
+            
 
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.label.setText(_translate("Form", result2[0][0]+"님"+today_medi[0]+"드셨나요"))
+        self.label.setText(_translate("Form", result2[0][0]+"님"+medi+"드셨나요"))
         self.pushButton.setText(_translate("Form", "back"))
 
 class Ui_Form_Medicine(object):
@@ -183,3 +191,4 @@ class Ui_Form_Medicine(object):
         Form.setWindowTitle(_translate("Form", "Form"))
         self.label.setText(_translate("Form", result2[0][0]+"님"+today_medi[0]+"드셨나요"))
         self.pushButton.setText(_translate("Form", "back"))
+
