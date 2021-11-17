@@ -16,20 +16,28 @@ from PyQt5.QtWidgets import *
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import QTimer, QTime, QDate
 from PyQt5.QtGui import *
+from bs4 import BeautifulSoup
+from pprint import pprint
+import requests
+import gtts
+import os
+import numpy as np
+from ffpyplayer.player import *
+
 
 
 
 ## mysql 연결 ###
 
-# conn = pymysql.connect(
-#     user='smart-mirror',
-#     passwd='1234',
-#     host='localhost',
-#     db='mirrordb',
-#     charset='utf8'
-#  )
-#
-# cursor = conn.cursor()
+conn = pymysql.connect(
+    user='smart-mirror',
+    passwd='1234',
+    host='localhost',
+    db='mirrordb',
+    charset='utf8'
+ )
+
+cursor = conn.cursor()
 
 
 
@@ -57,11 +65,22 @@ class Ui_Form_main(object):
         now_date = QDate.currentDate()
         dateText = now_date.toString('yyyy년 MM월 dd일')
         self.clock2 = QtWidgets.QLabel(Form)
-        self.clock2.setGeometry(QtCore.QRect(50, -450, 1920, 1080))
+        self.clock2.setGeometry(QtCore.QRect(50, -450, 1000, 1000))
         self.clock2.setStyleSheet("color: #fcfcfc;")
         self.clock2.setObjectName("clock2_label")
         self.clock2.setFont(QtGui.QFont("맑은 고딕",50))
         self.clock2.setText(dateText)
+
+        self.temperature = QtWidgets.QLabel(Form)
+        self.temperature.setGeometry(QtCore.QRect(1000, -350, 1920, 1080))
+        self.temperature.setStyleSheet("color: #fcfcfc;")
+        self.temperature.setObjectName("clock_label")
+        self.temperature.setFont(QtGui.QFont("맑은 고딕",20))
+
+        self.weatherTimer = QTimer(self)
+        self.displayWeather()
+        self.weatherTimer.start(1000*60)#10분
+        self.weatherTimer.timeout.connect(self.displayWeather)
 
 
 
@@ -73,6 +92,13 @@ class Ui_Form_main(object):
         self.pushButton2.setGeometry(QtCore.QRect(1800, 100, 93, 28))
         self.pushButton2.setObjectName("pushButton2")
 
+        self.medi = QtWidgets.QLabel(Form)
+        self.medi.setGeometry(QtCore.QRect(800, 100, 1920, 1080))
+        self.medi.setStyleSheet("color: #fcfcfc;")
+        self.medi.setObjectName("medi_label")
+        self.medi.setFont(QtGui.QFont("맑은 고딕",40))
+        self.medi.setText("어서오세요")
+
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -80,6 +106,45 @@ class Ui_Form_main(object):
         now_time = QTime.currentTime()
         timeText = now_time.toString('hh시 mm분 ss초')
         self.clock.setText(timeText)
+
+    def displayWeather(self):
+        html = requests.get('https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=%EC%9E%A5%EC%B6%A9%EB%8F%99+%EB%82%A0%EC%94%A8')
+        soup = BeautifulSoup(html.text, 'html.parser')
+        temper = soup.find('div', class_='weather_graphic').find('div', class_='temperature_text').text
+        temper = temper[6:9]
+        weather = soup.find('div', class_='temperature_info').find('p', class_='summary').find('span', class_='weather before_slash').text
+        temper = temper +"/"+ weather
+        self.temperature.setText(temper)
+
+    # def displayMedi(self, faceid):
+    #     print(faceid)
+    #     days = ['mon', 'tue', 'wen', 'thu', 'fri', 'sat', 'sun']
+    #     today = datetime.datetime.today().weekday()
+    #     faceid = str(faceid)
+    #     sql = 'select name from medicine where userID=' + faceid +' && ' + days[today]+'=1'
+    #     sql2 = 'select name from user where id=' + faceid
+    #     cursor.execute(sql)
+    #     result = cursor.fetchall()
+    #     cursor.execute(sql2)
+    #     result2 = cursor.fetchall()
+    #     i = 0
+    #     today_medi=[]
+    #     while(i<len(result)):
+    #         medicine = result[i][0]
+    #         today_medi.append(medicine)
+    #         if(medicine == pymysql.NULL):
+    #             break
+    #         i = i+1
+
+    #     medi = ""
+    #     x=0
+    #     while(x<len(today_medi)):
+    #         medi=medi+", "
+    #         medi=medi+today_medi[x]
+    #         x=x+1
+
+    #     self.stext = result2[0][0]+"님"+medi+"드셨나요"
+    #     self.medi.setText(self.stext)
 
 
     def retranslateUi(self, Form):
@@ -99,17 +164,6 @@ class Ui_Form_next(object):
         self.setAutoFillBackground(True)
         self.setPalette(pal)
 
-        # self.clock = QtWidgets.QLabel(Form)
-        # self.clock.setGeometry(QtCore.QRect(10, 100, 1920, 1080))
-        # self.clock.setStyleSheet("color: #fcfcfc;")
-        # self.clock.setObjectName("clock_label")
-        # self.clock.setFont(QtGui.QFont("맑은 고딕",50))
-        #
-        # self.timer=QTimer(self)
-        # self.timer.start(1000)
-        # self.timer.timeout.connect(self.displayTime)
-
-
         self.label = QtWidgets.QLabel(Form)
         self.label.setFont(QtGui.QFont("맑은 고딕",35))
         self.label.setGeometry(QtCore.QRect(500, 0, 1920, 1080))
@@ -118,14 +172,14 @@ class Ui_Form_next(object):
         self.pushButton = QtWidgets.QPushButton(Form)
         self.pushButton.setGeometry(QtCore.QRect(1800, 0, 93, 28))
         self.pushButton.setObjectName("pushButton")
-        # self.retranslateUi(Form,faceid)
+        self.pushButton2 = QtWidgets.QPushButton(Form)
+        self.pushButton2.setGeometry(QtCore.QRect(1800, 50, 93, 28))
+        self.pushButton2.setObjectName("pushButton2")
+        self.pushButton3 = QtWidgets.QPushButton(Form)
+        self.pushButton3.setGeometry(QtCore.QRect(1800, 100, 93, 28))
+        self.pushButton3.setObjectName("pushButton3")
+        self.retranslateUi(Form,faceid)
         QtCore.QMetaObject.connectSlotsByName(Form)
-
-    # def displayTime(self):
-    #     now_time = QTime.currentTime()
-    #     timeText = now_time.toString('hh:mm:ss')
-    #     self.clock.setText(timeText)
-
 
     def retranslateUi(self, Form, faceid):
         print(faceid)
@@ -154,40 +208,79 @@ class Ui_Form_next(object):
             medi=medi+today_medi[x]
             x=x+1
 
-
+        self.stext = result2[0][0]+"님"+medi+"드셨나요"
+        self.saveSound()
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.label.setText(_translate("Form", result2[0][0]+"님"+medi+"드셨나요"))
+        self.label.setText(_translate("Form", self.stext))
         self.pushButton.setText(_translate("Form", "back"))
+        self.pushButton2.setText(_translate("Form", "음성재생"))
+        self.pushButton3.setText(_translate("Form", "nextPage"))
+        
 
-class Ui_Form_Medicine(object):
-    def setupUi(self, Form):
-        pass
+    def saveSound(self):
+        tts = gtts.gTTS(text=self.stext, lang='ko', slow=False)
+        tts.save('medi.mp3')
+
+class Ui_Form_emotion(object):
+    def setupUi(self, Form, faceid):
+        Form.setObjectName("Form")
+        Form.setGeometry(0,0,1920,1080)
+
+        pal = QPalette()
+        pal.setColor(QPalette.Background,QColor(0,0,0))
+        self.setAutoFillBackground(True)
+        self.setPalette(pal)
+
+        self.label = QtWidgets.QLabel(Form)
+        self.label.setFont(QtGui.QFont("맑은 고딕",35))
+        self.label.setGeometry(QtCore.QRect(500, 0, 1920, 1080))
+        self.label.setStyleSheet("color: #fcfcfc;")
+        self.label.setObjectName("label")
+        self.pushButton = QtWidgets.QPushButton(Form)
+        self.pushButton.setGeometry(QtCore.QRect(1800, 0, 93, 28))
+        self.pushButton.setObjectName("pushButton")
+        self.pushButton2 = QtWidgets.QPushButton(Form)
+        self.pushButton2.setGeometry(QtCore.QRect(1800, 50, 93, 28))
+        self.pushButton2.setObjectName("pushButton2")
+        self.retranslateUi(Form,faceid)
+        QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form, faceid):
         print(faceid)
-        days = ['mon', 'tue', 'wen', 'thu', 'fri', 'sat', 'sun']
-        today = datetime.datetime.today().weekday()
         faceid = str(faceid)
-        sql = 'select name from medicine where userID=' + faceid +' && ' + days[today]+'=1'
-        sql2 = 'select name from user where id=1'
+        sql = 'select name from user where id=' + faceid
         cursor.execute(sql)
         result = cursor.fetchall()
-        cursor.execute(sql2)
-        result2 = cursor.fetchall()
-        i = 0
-        today_medi=[]
-        while(i<len(result)):
-            medicine = result[i][0]
-            print(medicine)
-            today_medi.append(medicine)
-            print(today_medi)
-            if(medicine == pymysql.NULL):
-                break
-            i = i+1
-        print(today_medi)
+        self.stext = result[0][0] + "님 오늘 기분어떠신가요"
 
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.label.setText(_translate("Form", result2[0][0]+"님"+today_medi[0]+"드셨나요"))
+        self.label.setText(_translate("Form", self.stext))
         self.pushButton.setText(_translate("Form", "back"))
+        self.pushButton2.setText(_translate("Form", "음성녹음"))
+
+    def playVideo(self, faceid):
+        sql = 'select name from stretching where userId=' + str(faceid)
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        video_path = result[0][0]+".mp4"
+        video=cv2.VideoCapture(video_path)
+        player = MediaPlayer(video_path)
+        while True:
+            grabbed, frame=video.read()
+            audio_frame, val = player.get_frame()
+            if not grabbed:
+                print("End of video")
+                break
+            if cv2.waitKey(28) & 0xFF == ord("q"):
+                break
+            cv2.imshow("Video", frame)
+            if val != 'eof' and audio_frame is not None:
+                #audio
+                img, t = audio_frame
+        video.release()
+        cv2.destroyAllWindows()
+
+
+ 
