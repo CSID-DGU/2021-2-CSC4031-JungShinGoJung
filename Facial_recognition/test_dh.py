@@ -1,3 +1,4 @@
+from pymysql import NULL
 import page_dh
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QDialog, QApplication, QFileDialog
@@ -5,28 +6,48 @@ import cv2
 import FaceLogin
 import sys
 from PyQt5.QtCore import *
-
+import playsound
+import os
+import pyaudio
+import speech_recognition as sr
+import time
+import simpleaudio
+import pygame
 
 
 class mainWindow(QDialog, page_dh.Ui_Form_main):
     def __init__(self):
         super(mainWindow, self).__init__()
         self.setupUi(self)
+        
         self.pushButton.clicked.connect(self.OpenLoginClass)
+        # self.playsignal.sig.connect(self.playSoundEmitted)
+       
         # self.Pir_run()
+
 
     def OpenLoginClass(self):
         faceid = FaceLogin.DetectFace()
         login_window = login(faceid)
-        widget.addWidget(login_window) ######
+        widget.addWidget(login_window) #####
         widget.setCurrentIndex(widget.currentIndex()+1) ######
 
+    
+    # @pyqtSlot()
+    # def playSoundEmitted(self):
+    #     playsound.playsound('medi.mp3')
+    #     os.remove('medi.mp3')
+    #     print("소리재생")
 
-class FaceIdSiganl(QObject):
 
-    signal = pyqtSignal(int)
-    def run(self, faceid):
-        self.signal.emit(faceid)
+
+class PlaySignal(QObject):
+    sig = pyqtSignal()
+    def run(self):
+        self.sig.emit()
+
+
+        
 
 
 
@@ -69,25 +90,105 @@ class login(QDialog, page_dh.Ui_Form_next):
         super(login, self).__init__()
         self.faceid = faceid
         #여기에 위치해 주세요 png
+        # self.playsignal = PlaySignal()
         self.setupUi(self, self.faceid)
         self.pushButton.clicked.connect(self.back)
+        self.pushButton2.clicked.connect(self.playSound)
+        self.pushButton3.clicked.connect(self.OpenEmotionClass)
+        # self.playsignal.sig.connect(self.playSoundEmitted)
 
+    # @pyqtSlot()
+    # def playSoundEmitted(self):
+    #     pygame.mixer.init()
+    #     pygame.mixer.music.load("medi.mp3")
+    #     pygame.mixer.music.play()
+    #     # os.remove('medi.mp3')
+    #     print("소리재생")
 
-    def OpenMedicineClass(self):
+    def playSound(self):
+        pygame.mixer.init()
+        pygame.mixer.music.load("medi.mp3")
+        pygame.mixer.music.play()
+        
+    
+
+    def OpenEmotionClass(self):
+        emotionClass = emotion(self.faceid)
+        widget.addWidget(emotionClass)
         widget.setCurrentIndex(widget.currentIndex()+1)
+        
 
     ###임시 뒤로가기 버튼
     def back(self):
         widget.setCurrentIndex(widget.currentIndex()-1)
+    
+
+class emotion(QDialog, page_dh.Ui_Form_emotion):
+    def __init__(self, faceid):
+        super(emotion, self).__init__()
+        self.faceid = faceid
+        #여기에 위치해 주세요 png
+        self.setupUi(self, self.faceid)
+        self.pushButton.clicked.connect(self.back)
+        self.pushButton2.clicked.connect(self.record)
+
+    def record(self):
+        r = sr.Recognizer()
+        with sr.Microphone() as source:
+            print("Say something!")
+            audio = r.listen(source)
+        
+        stt = r.recognize_google(audio, language='ko')    
+        try: print("Google Speech Recognition thinks you said : " + stt)
+        except sr.UnknownValueError: print("Google Speech Recognition could not understand audio")
+        except sr.RequestError as e: print("Could not request results from Google Speech Recognition service; {0}".format(e))
+        
+        idDate = str(self.faceid) +"_"+time.strftime('%Y_%m_%d', time.localtime(time.time()))
+        content = '\n'+idDate +': '+ stt
+        file = open('record.txt', 'a') 
+        file.write(content)     
+        file.close()
+        self.capture()
+        pygame.mixer.init()
+        pygame.mixer.music.load("stretching.mp3")
+        pygame.mixer.music.play()
+        self.playVideo(self.faceid)
+        self.init()
+ 
+
+    def capture(self):
+        filename = str(self.faceid) +"_"+time.strftime('%Y_%m_%d', time.localtime(time.time()))+".jpg"
+        cap = cv2.VideoCapture(0)
+        if cap.isOpened(): 
+            while True:
+                ret, fram = cap.read()
+                if ret:
+                    cv2.imshow("camera",fram) #프레임 이미지 표시
+                    cv2.imwrite("Facial_recognition/caputre/"+filename,fram)
+                    break
+                else:
+                    print("no fram")
+                    break
+        else: print("can't open camera")
+        cap.release()
+        cv2.destroyAllWindows()
+
+
+    def init(self):
+        widget.setCurrentIndex(widget.currentIndex()-2)
+        
+    
+    def back(self):
+        widget.setCurrentIndex(widget.currentIndex()-1)
+       
+            
+
+
+
 
 
 
 class Medicine(QDialog):
-    def __init__(self) :
-        super().__init__()
-
-
-class Emotion(QDialog):
     def __init__(self) :
         super().__init__()
 
@@ -115,18 +216,22 @@ class Exercise(QDialog):
 
 if __name__ == "__main__":
     ###페이스 로그인 아이디 생성
-    #FaceLogin.TakeImages()
-    #FaceLogin.TrainImages()
+    # FaceLogin.TakeImages()
+    # FaceLogin.TrainImages()
     app = QtWidgets.QApplication(sys.argv)
+    print("시작")
 
     ###스택용 위젯
     widget=QtWidgets.QStackedWidget()
-
+    print("시작2")
     ### 다이얼로그 위젯 생성
     main_window = mainWindow()
     widget.addWidget(main_window)
 
-
     widget.showFullScreen()
+    print("시작3")
+
+
+
 
     sys.exit(app.exec_())
