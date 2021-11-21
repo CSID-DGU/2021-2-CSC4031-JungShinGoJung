@@ -84,13 +84,13 @@ class Ui_Form_main(object):
 
 
 
-        self.pushButton = QtWidgets.QPushButton(Form)
-        self.pushButton.setGeometry(QtCore.QRect(1800, 0, 93, 28))
-        self.pushButton.setObjectName("pushButton")
+        # self.pushButton = QtWidgets.QPushButton(Form)
+        # self.pushButton.setGeometry(QtCore.QRect(1800, 0, 93, 28))
+        # self.pushButton.setObjectName("pushButton")
 
-        self.pushButton2 = QtWidgets.QPushButton(Form)
-        self.pushButton2.setGeometry(QtCore.QRect(1800, 100, 93, 28))
-        self.pushButton2.setObjectName("pushButton2")
+        # self.pushButton2 = QtWidgets.QPushButton(Form)
+        # self.pushButton2.setGeometry(QtCore.QRect(1800, 100, 93, 28))
+        # self.pushButton2.setObjectName("pushButton2")
 
         self.medi = QtWidgets.QLabel(Form)
         self.medi.setGeometry(QtCore.QRect(800, 100, 1920, 1080))
@@ -116,42 +116,12 @@ class Ui_Form_main(object):
         temper = temper +"/"+ weather
         self.temperature.setText(temper)
 
-    # def displayMedi(self, faceid):
-    #     print(faceid)
-    #     days = ['mon', 'tue', 'wen', 'thu', 'fri', 'sat', 'sun']
-    #     today = datetime.datetime.today().weekday()
-    #     faceid = str(faceid)
-    #     sql = 'select name from medicine where userID=' + faceid +' && ' + days[today]+'=1'
-    #     sql2 = 'select name from user where id=' + faceid
-    #     cursor.execute(sql)
-    #     result = cursor.fetchall()
-    #     cursor.execute(sql2)
-    #     result2 = cursor.fetchall()
-    #     i = 0
-    #     today_medi=[]
-    #     while(i<len(result)):
-    #         medicine = result[i][0]
-    #         today_medi.append(medicine)
-    #         if(medicine == pymysql.NULL):
-    #             break
-    #         i = i+1
-
-    #     medi = ""
-    #     x=0
-    #     while(x<len(today_medi)):
-    #         medi=medi+", "
-    #         medi=medi+today_medi[x]
-    #         x=x+1
-
-    #     self.stext = result2[0][0]+"님"+medi+"드셨나요"
-    #     self.medi.setText(self.stext)
-
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.pushButton.setText(_translate("Form", "next"))
-        self.pushButton2.setText(_translate("Form", "videoPage"))
+    #     # self.pushButton.setText(_translate("Form", "next"))
+    #     # self.pushButton2.setText(_translate("Form", "videoPage"))
 
 
 class Ui_Form_next(object):
@@ -169,15 +139,15 @@ class Ui_Form_next(object):
         self.label.setGeometry(QtCore.QRect(500, 0, 1920, 1080))
         self.label.setStyleSheet("color: #fcfcfc;")
         self.label.setObjectName("label")
-        self.pushButton = QtWidgets.QPushButton(Form)
-        self.pushButton.setGeometry(QtCore.QRect(1800, 0, 93, 28))
-        self.pushButton.setObjectName("pushButton")
-        self.pushButton2 = QtWidgets.QPushButton(Form)
-        self.pushButton2.setGeometry(QtCore.QRect(1800, 50, 93, 28))
-        self.pushButton2.setObjectName("pushButton2")
-        self.pushButton3 = QtWidgets.QPushButton(Form)
-        self.pushButton3.setGeometry(QtCore.QRect(1800, 100, 93, 28))
-        self.pushButton3.setObjectName("pushButton3")
+        # self.pushButton = QtWidgets.QPushButton(Form)
+        # self.pushButton.setGeometry(QtCore.QRect(1800, 0, 93, 28))
+        # self.pushButton.setObjectName("pushButton")
+        # self.pushButton2 = QtWidgets.QPushButton(Form)
+        # self.pushButton2.setGeometry(QtCore.QRect(1800, 50, 93, 28))
+        # self.pushButton2.setObjectName("pushButton2")
+        # self.pushButton3 = QtWidgets.QPushButton(Form)
+        # self.pushButton3.setGeometry(QtCore.QRect(1800, 100, 93, 28))
+        # self.pushButton3.setObjectName("pushButton3")
         self.retranslateUi(Form,faceid)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -213,9 +183,9 @@ class Ui_Form_next(object):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
         self.label.setText(_translate("Form", self.stext))
-        self.pushButton.setText(_translate("Form", "back"))
-        self.pushButton2.setText(_translate("Form", "음성재생"))
-        self.pushButton3.setText(_translate("Form", "nextPage"))
+        # self.pushButton.setText(_translate("Form", "back"))
+        # self.pushButton2.setText(_translate("Form", "음성재생"))
+        # self.pushButton3.setText(_translate("Form", "nextPage"))
         
 
     def saveSound(self):
@@ -237,12 +207,12 @@ class Ui_Form_emotion(object):
         self.label.setGeometry(QtCore.QRect(500, 0, 1920, 1080))
         self.label.setStyleSheet("color: #fcfcfc;")
         self.label.setObjectName("label")
-        self.pushButton = QtWidgets.QPushButton(Form)
-        self.pushButton.setGeometry(QtCore.QRect(1800, 0, 93, 28))
-        self.pushButton.setObjectName("pushButton")
-        self.pushButton2 = QtWidgets.QPushButton(Form)
-        self.pushButton2.setGeometry(QtCore.QRect(1800, 50, 93, 28))
-        self.pushButton2.setObjectName("pushButton2")
+        # self.pushButton = QtWidgets.QPushButton(Form)
+        # self.pushButton.setGeometry(QtCore.QRect(1800, 0, 93, 28))
+        # self.pushButton.setObjectName("pushButton")
+        # self.pushButton2 = QtWidgets.QPushButton(Form)
+        # self.pushButton2.setGeometry(QtCore.QRect(1800, 50, 93, 28))
+        # self.pushButton2.setObjectName("pushButton2")
         self.retranslateUi(Form,faceid)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -253,12 +223,13 @@ class Ui_Form_emotion(object):
         cursor.execute(sql)
         result = cursor.fetchall()
         self.stext = result[0][0] + "님 오늘 기분어떠신가요"
+        self.saveSound()
 
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
         self.label.setText(_translate("Form", self.stext))
-        self.pushButton.setText(_translate("Form", "back"))
-        self.pushButton2.setText(_translate("Form", "음성녹음"))
+        # self.pushButton.setText(_translate("Form", "back"))
+        # self.pushButton2.setText(_translate("Form", "음성녹음"))
 
     def playVideo(self, faceid):
         sql = 'select name from stretching where userId=' + str(faceid)
@@ -281,6 +252,10 @@ class Ui_Form_emotion(object):
                 img, t = audio_frame
         video.release()
         cv2.destroyAllWindows()
+
+    def saveSound(self):
+        tts = gtts.gTTS(text=self.stext, lang='ko', slow=False)
+        tts.save('mood.mp3')
 
 
  

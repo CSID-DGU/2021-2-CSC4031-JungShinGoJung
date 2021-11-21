@@ -6,6 +6,7 @@ import cv2
 import FaceLogin
 import sys
 from PyQt5.QtCore import *
+from PyQt5.QtCore import Qt
 import playsound
 import os
 import pyaudio
@@ -13,6 +14,7 @@ import speech_recognition as sr
 import time
 import simpleaudio
 import pygame
+from konlpy.tag import Komoran, Kkma, Mecab
 
 
 class mainWindow(QDialog, page_dh.Ui_Form_main):
@@ -20,10 +22,24 @@ class mainWindow(QDialog, page_dh.Ui_Form_main):
         super(mainWindow, self).__init__()
         self.setupUi(self)
         
-        self.pushButton.clicked.connect(self.OpenLoginClass)
+       
         # self.playsignal.sig.connect(self.playSoundEmitted)
        
         # self.Pir_run()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_A:
+            self.OpenLoginClass()
+    def mousButtonKind(self, buttons):
+        if buttons & Qt.LeftButton:
+            self.OpenLoginClass()
+
+    def mousePressEvent(self, e):
+        self.mousButtonKind(e.buttons())
+
+
+
+        
 
 
     def OpenLoginClass(self):
@@ -92,10 +108,25 @@ class login(QDialog, page_dh.Ui_Form_next):
         #여기에 위치해 주세요 png
         # self.playsignal = PlaySignal()
         self.setupUi(self, self.faceid)
-        self.pushButton.clicked.connect(self.back)
-        self.pushButton2.clicked.connect(self.playSound)
-        self.pushButton3.clicked.connect(self.OpenEmotionClass)
+
         # self.playsignal.sig.connect(self.playSoundEmitted)
+
+    def mousButtonKind(self, buttons):
+        if buttons & Qt.LeftButton:
+            self.OpenEmotionClass()
+        if buttons & Qt.RightButton:
+            self.playSound()
+
+    def mousePressEvent(self, e):
+        self.mousButtonKind(e.buttons())
+
+        
+    # def keyPressEvent(self, event):
+    #     if event.key() == Qt.Key_N:
+    #         self.OpenEmotionClass()
+    #     elif event.key() == Qt.Key_P:
+    #         self.playSound()
+
 
     # @pyqtSlot()
     # def playSoundEmitted(self):
@@ -129,8 +160,25 @@ class emotion(QDialog, page_dh.Ui_Form_emotion):
         self.faceid = faceid
         #여기에 위치해 주세요 png
         self.setupUi(self, self.faceid)
-        self.pushButton.clicked.connect(self.back)
-        self.pushButton2.clicked.connect(self.record)
+
+    
+    def mousButtonKind(self, buttons):
+        if buttons & Qt.LeftButton:
+            self.record()
+        
+        if buttons & Qt.RightButton:
+            self.playSound()
+    
+    def mousePressEvent(self, e):
+        self.mousButtonKind(e.buttons())
+
+
+
+
+    def playSound(self):
+        pygame.mixer.init()
+        pygame.mixer.music.load("mood.mp3")
+        pygame.mixer.music.play()
 
     def record(self):
         r = sr.Recognizer()
@@ -142,6 +190,17 @@ class emotion(QDialog, page_dh.Ui_Form_emotion):
         try: print("Google Speech Recognition thinks you said : " + stt)
         except sr.UnknownValueError: print("Google Speech Recognition could not understand audio")
         except sr.RequestError as e: print("Could not request results from Google Speech Recognition service; {0}".format(e))
+        
+        #텍스트 비식별화
+        komoran = Komoran()
+        sen = komoran.pos(stt)
+        for nlpy in sen:
+            if nlpy[1] == 'NNP':
+                mk=''
+                for a in nlpy[0]:
+                    mk = mk + '*'
+                print(nlpy[0])
+                stt = stt.replace(nlpy[0], mk)
         
         idDate = str(self.faceid) +"_"+time.strftime('%Y_%m_%d', time.localtime(time.time()))
         content = '\n'+idDate +': '+ stt
