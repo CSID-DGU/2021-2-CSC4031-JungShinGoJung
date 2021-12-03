@@ -24,6 +24,7 @@ import os
 import numpy as np
 from ffpyplayer.player import *
 import time
+import emotion_faces
 
 
 
@@ -220,13 +221,18 @@ class Ui_Form_emotion(object):
         self.retranslateUi(Form,faceid, emotion_result)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
-    def retranslateUi(self, Form, faceid, emotion_result):
+    def retranslateUi(self, Form, faceid):
         print(faceid)
         faceid = str(faceid)
         sql = 'select name from user where id=' + faceid
         cursor.execute(sql)
         result = cursor.fetchall()
-        self.stext = result[0][0] + "님 오늘 기분이 좋으신가요"
+        emotion_result = emotion_faces.emotion(faceid)
+
+        if emotion_result == 1:
+            self.stext = result[0][0] + "님 오늘 기분이 좋으신가요"
+        else : self.stext = result[0][0] + "님 오늘 기분이 슬프신가요"
+
         self.saveSound()
       
         _translate = QtCore.QCoreApplication.translate
