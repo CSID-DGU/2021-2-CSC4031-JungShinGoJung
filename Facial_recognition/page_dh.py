@@ -23,6 +23,7 @@ import gtts
 import os
 import numpy as np
 from ffpyplayer.player import *
+import time
 
 
 
@@ -30,7 +31,7 @@ from ffpyplayer.player import *
 ## mysql 연결 ###
 
 conn = pymysql.connect(
-    user='smart-mirror',
+    user='root',
     passwd='1234',
     host='localhost',
     db='mirrordb',
@@ -44,7 +45,7 @@ cursor = conn.cursor()
 class Ui_Form_main(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.setGeometry(0,0,1920,1080)
+        Form.setGeometry(0,0,1080,1920)
 
         pal = QPalette()
         pal.setColor(QPalette.Background,QColor(0,0,0))
@@ -53,7 +54,7 @@ class Ui_Form_main(object):
 
 
         self.clock = QtWidgets.QLabel(Form)
-        self.clock.setGeometry(QtCore.QRect(50, -350, 1920, 1080))
+        self.clock.setGeometry(QtCore.QRect(50, -800, 1080,1920))
         self.clock.setStyleSheet("color: #fcfcfc;")
         self.clock.setObjectName("clock_label")
         self.clock.setFont(QtGui.QFont("맑은 고딕",35))
@@ -65,14 +66,14 @@ class Ui_Form_main(object):
         now_date = QDate.currentDate()
         dateText = now_date.toString('yyyy년 MM월 dd일')
         self.clock2 = QtWidgets.QLabel(Form)
-        self.clock2.setGeometry(QtCore.QRect(50, -450, 1000, 1000))
+        self.clock2.setGeometry(QtCore.QRect(50, -850, 1080,1920))
         self.clock2.setStyleSheet("color: #fcfcfc;")
         self.clock2.setObjectName("clock2_label")
-        self.clock2.setFont(QtGui.QFont("맑은 고딕",50))
+        self.clock2.setFont(QtGui.QFont("맑은 고딕",40))
         self.clock2.setText(dateText)
 
         self.temperature = QtWidgets.QLabel(Form)
-        self.temperature.setGeometry(QtCore.QRect(1000, -350, 1920, 1080))
+        self.temperature.setGeometry(QtCore.QRect(50, -750, 1080,1920))
         self.temperature.setStyleSheet("color: #fcfcfc;")
         self.temperature.setObjectName("clock_label")
         self.temperature.setFont(QtGui.QFont("맑은 고딕",20))
@@ -93,11 +94,11 @@ class Ui_Form_main(object):
         # self.pushButton2.setObjectName("pushButton2")
 
         self.medi = QtWidgets.QLabel(Form)
-        self.medi.setGeometry(QtCore.QRect(800, 100, 1920, 1080))
+        self.medi.setGeometry(QtCore.QRect(200, 100, 1080,1920))
         self.medi.setStyleSheet("color: #fcfcfc;")
         self.medi.setObjectName("medi_label")
-        self.medi.setFont(QtGui.QFont("맑은 고딕",40))
-        self.medi.setText("어서오세요")
+        self.medi.setFont(QtGui.QFont("맑은 고딕",30))
+        self.medi.setText("안녕하세요!!! 장충노인회관 입니다 ^^")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -127,7 +128,7 @@ class Ui_Form_main(object):
 class Ui_Form_next(object):
     def setupUi(self, Form, faceid):
         Form.setObjectName("Form")
-        Form.setGeometry(0,0,1920,1080)
+        Form.setGeometry(0,0,768,1360)
 
         pal = QPalette()
         pal.setColor(QPalette.Background,QColor(0,0,0))
@@ -136,7 +137,7 @@ class Ui_Form_next(object):
 
         self.label = QtWidgets.QLabel(Form)
         self.label.setFont(QtGui.QFont("맑은 고딕",35))
-        self.label.setGeometry(QtCore.QRect(500, 0, 1920, 1080))
+        self.label.setGeometry(QtCore.QRect(100, 100, 1080,1920))
         self.label.setStyleSheet("color: #fcfcfc;")
         self.label.setObjectName("label")
         # self.pushButton = QtWidgets.QPushButton(Form)
@@ -162,23 +163,26 @@ class Ui_Form_next(object):
         result = cursor.fetchall()
         cursor.execute(sql2)
         result2 = cursor.fetchall()
-        i = 0
-        today_medi=[]
-        while(i<len(result)):
-            medicine = result[i][0]
-            today_medi.append(medicine)
-            if(medicine == pymysql.NULL):
-                break
-            i = i+1
+        if not result2:
+            self.text = '오늘복용할약없습니다'
+        else:
+            i = 0
+            today_medi=[]
+            while(i<len(result)):
+                medicine = result[i][0]
+                today_medi.append(medicine)
+                if(medicine == pymysql.NULL):
+                    break
+                i = i+1
 
-        medi = ""
-        x=0
-        while(x<len(today_medi)):
-            medi=medi+", "
-            medi=medi+today_medi[x]
-            x=x+1
-
-        self.stext = result2[0][0]+"님"+medi+"드셨나요"
+            medi = ""
+            x=0
+            while(x<len(today_medi)):
+                medi=medi+", "
+                medi=medi+today_medi[x]
+                x=x+1
+            self.stext = result2[0][0]+"님"+medi+"드셨나요"
+        
         self.saveSound()
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
@@ -190,12 +194,12 @@ class Ui_Form_next(object):
 
     def saveSound(self):
         tts = gtts.gTTS(text=self.stext, lang='ko', slow=False)
-        tts.save('medi.mp3')
+        tts.save('/home/pi/Desktop/mirror/2021-2-CSC4031-JungShinGoJung/Facial_recognition/asset/medi.mp3')
 
 class Ui_Form_emotion(object):
-    def setupUi(self, Form, faceid):
+    def setupUi(self, Form, faceid, emotion_result):
         Form.setObjectName("Form")
-        Form.setGeometry(0,0,1920,1080)
+        Form.setGeometry(0,0,1080,1920)
 
         pal = QPalette()
         pal.setColor(QPalette.Background,QColor(0,0,0))
@@ -204,7 +208,7 @@ class Ui_Form_emotion(object):
 
         self.label = QtWidgets.QLabel(Form)
         self.label.setFont(QtGui.QFont("맑은 고딕",35))
-        self.label.setGeometry(QtCore.QRect(500, 0, 1920, 1080))
+        self.label.setGeometry(QtCore.QRect(300, 100, 1080,1920))
         self.label.setStyleSheet("color: #fcfcfc;")
         self.label.setObjectName("label")
         # self.pushButton = QtWidgets.QPushButton(Form)
@@ -213,18 +217,18 @@ class Ui_Form_emotion(object):
         # self.pushButton2 = QtWidgets.QPushButton(Form)
         # self.pushButton2.setGeometry(QtCore.QRect(1800, 50, 93, 28))
         # self.pushButton2.setObjectName("pushButton2")
-        self.retranslateUi(Form,faceid)
+        self.retranslateUi(Form,faceid, emotion_result)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
-    def retranslateUi(self, Form, faceid):
+    def retranslateUi(self, Form, faceid, emotion_result):
         print(faceid)
         faceid = str(faceid)
         sql = 'select name from user where id=' + faceid
         cursor.execute(sql)
         result = cursor.fetchall()
-        self.stext = result[0][0] + "님 오늘 기분어떠신가요"
+        self.stext = result[0][0] + "님 오늘 기분이 좋으신가요"
         self.saveSound()
-
+      
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
         self.label.setText(_translate("Form", self.stext))
@@ -235,27 +239,46 @@ class Ui_Form_emotion(object):
         sql = 'select name from stretching where userId=' + str(faceid)
         cursor.execute(sql)
         result = cursor.fetchall()
-        video_path = result[0][0]+".mp4"
+        print(result)
+        if not result :
+            video_path='/home/pi/Desktop/mirror/2021-2-CSC4031-JungShinGoJung/Facial_recognition/asset/전신.mp4'
+        else:
+            video_path = "/home/pi/Desktop/mirror/2021-2-CSC4031-JungShinGoJung/Facial_recognition/asset/"+result[0][0]+".mp4"
+       
         video=cv2.VideoCapture(video_path)
+        
+        print(str(video.get(cv2.CAP_PROP_FPS))+"!!!!!!!!!!!!!!")
         player = MediaPlayer(video_path)
+        # fps = int(video.get(cv2.CAP_PROP_FPS))
+
+        fps=1
+        prev_time =0 
+        cv2.namedWindow("Video")
+        cv2.moveWindow("Video", 150, 650)
         while True:
             grabbed, frame=video.read()
+
             audio_frame, val = player.get_frame()
-            if not grabbed:
-                print("End of video")
+            # if (grabbed is True):
+            if not grabbed :
+                print("video end")
                 break
-            if cv2.waitKey(28) & 0xFF == ord("q"):
+
+            if cv2.waitKey(22) & 0xFF == ord('q'):
                 break
+
             cv2.imshow("Video", frame)
             if val != 'eof' and audio_frame is not None:
                 #audio
                 img, t = audio_frame
+        
         video.release()
         cv2.destroyAllWindows()
 
     def saveSound(self):
         tts = gtts.gTTS(text=self.stext, lang='ko', slow=False)
-        tts.save('mood.mp3')
+        tts.save('/home/pi/Desktop/mirror/2021-2-CSC4031-JungShinGoJung/Facial_recognition/asset/mood.mp3')
 
 
  
+
